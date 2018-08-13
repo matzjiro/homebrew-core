@@ -83,12 +83,13 @@ class Sqlite < Formula
 
     if build.with? "functions"
       buildpath.install resource("functions")
-      system ENV.cc, "-fno-common",
-                     "-dynamiclib",
+      system ENV.cc, "-fPIC",
+                     "-lm",
+                     "-shared",
                      "extension-functions.c",
-                     "-o", "libsqlitefunctions.dylib",
+                     "-o", "libsqlitefunctions.so",
                      *ENV.cflags.to_s.split
-      lib.install "libsqlitefunctions.dylib"
+      lib.install "libsqlitefunctions.so"
     end
     doc.install resource("docs") if build.with? "docs"
   end
@@ -110,7 +111,7 @@ class Sqlite < Formula
 
           If the program is built so that loading extensions is permitted,
           the following will work:
-           sqlite> SELECT load_extension('#{lib}/libsqlitefunctions.dylib');
+           sqlite> SELECT load_extension('#{lib}/libsqlitefunctions');
            sqlite> select cos(radians(45));
            0.707106781186548
       EOS
